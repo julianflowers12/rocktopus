@@ -83,7 +83,8 @@ process_consumption_data <- function(consumption_data){
                year = year(date)) |>
         select(wk, everything()) |>
         mutate(peak = case_when(hour_st %in% c(23, 0:5) | is.na(hour_st)  ~ "off_peak",
-
+                                hour_st == 23 & hour_end == 0 ~ "off_peak",
+                                hour_st == 5 & hour_end == 5 ~ "off_peak",
                                 hour_st %in% c(6:22) ~ "peak",
                                 TRUE ~ "unknown"))
 
