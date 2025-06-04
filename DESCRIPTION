@@ -16,4 +16,8 @@ LazyData: true
 URL: https://github.com/julianflowers12/rocktopus
 BugReports: https://github.com/julianflowers12/rocktopus/issues
 RoxygenNote: 7.3.2
-
+Imports: 
+    dplyr, 
+    httr2
+Suggests: 
+    ggplot2
