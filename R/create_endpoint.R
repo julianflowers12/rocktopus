@@ -12,7 +12,7 @@
 create_endpoint <- function(mpan, serial){
     base_url <- "https://api.octopus.energy/v1/"
 
-    url1 <- paste0(base_url, "electricity-meter-points/", mpan, "/meters/", serial, "/consumption/?page_size=25000")
+    url1 <- paste0(base_url, "electricity-meter-points/", mpan, "/meters/", serial, "/consumption/?page_size=50000")
 
     return(url1)
 }
