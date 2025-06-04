@@ -3,7 +3,7 @@
 #' @param out The output from the get_property_details function.
 #' @param property_index The index of the property in the output list (default is 1).
 #' @return A list containing the MPAN, export MPAN, meter serial number, and export serial number.
-#'
+#' @export
 #' @examples
 #' out <- get_property_details("your_account_number", "your_api_key")
 

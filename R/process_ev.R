@@ -1,6 +1,7 @@
 #' Process EV data
 #' @param df Data frame containing EV data
 #' @return A data frame with processed EV data
+#' @export
 #' @examples
 #' ev_data <- read.csv("ev_data.csv")
 #' evd_process(ev_data)
