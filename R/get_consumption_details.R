@@ -13,7 +13,7 @@
 
 get_cons <- function(url){
 
-    response <- request(urly) |>
+    response <- request(url) |>
         req_auth_basic(username = api_key, password = "") |> req_perform() |>
         resp_body_json()
 
