@@ -20,4 +20,7 @@ Imports:
     dplyr, 
     httr2
 Suggests: 
-    ggplot2
+    ggplot2,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
