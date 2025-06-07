@@ -18,7 +18,9 @@ BugReports: https://github.com/julianflowers12/rocktopus/issues
 RoxygenNote: 7.3.2
 Imports: 
     dplyr, 
-    httr2
+    httr2,
+    stringr, 
+    lubridate
 Suggests: 
     ggplot2,
     knitr,
