@@ -27,7 +27,7 @@ install.packages(c("needs"), source = "https://cloud.r-project.org/", repos = "h
 library(needs)
 needs("tidyverse", "data.table", "janitor", "lubridate", "httr", "glue", "purrr", "rlist")
 
-devtools::install_github("julianflowers12/rocktopus", force = FALSE)
+devtools::install_github("julianflowers12/rocktopus", force = TRUE)
 library(rocktopus)
 
 ```
