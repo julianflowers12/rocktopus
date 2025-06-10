@@ -64,7 +64,7 @@ We can now extract the MPAN and meter serial number for each property associated
 ```{r}
 # Extract MPAN and meter serial number for each property
 
-mpan_serial <- get_electric_mpan(meter_details, property_index = 1) |>
+mpan_serial <- get_electric_mpan(meter_details, property_index = 2) |>
   enframe() |>
   unnest(value)
 
@@ -119,17 +119,37 @@ library(ggplot2)
 processed_data |>
   group_by(date, peak) |>
   summarise(total = sum(consumption, na.rm = TRUE)) |>
+  filter(date > "2025-01-31") |>
   ggplot(aes(x = date, y = total, colour = peak)) +
-  geom_line() +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE, aes(fill = peak), alpha = 0.2) +
   labs(
     title = "Electricity Consumption",
     x = "Date",
     y = "Consumption (kWh)",
     fill = "Peak"
   ) +
-  theme_minimal() +
+  ggthemes::theme_base() +
   scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 month") +
-  theme(axis.text.x= element_text(angle = 45, hjust = 1))
+  theme(axis.text.x= element_text(angle = 45, hjust = 1, size = 10),
+        title = element_text(size = 14, face = "bold"),
+        legend.position = "bottom") +
+  facet_wrap(~ peak, scales = "free")
 
 
 ```
+
+## Getting aggregatted consumption data
+
+```{r}
+# Create aggregated consumption endpoints for each property
+# 
+
+agg_url <- create_endpoint_agg(mpan = mpan_serial[1,2], serial = mpan_serial[3,2], group_by = "month")
+
+
+agg_consumption_data <- get_cons(agg_url)
+
+
+```
+
