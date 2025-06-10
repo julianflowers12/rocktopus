@@ -141,19 +141,25 @@ processed_data |>
 
 ## Getting aggregatted consumption data
 
+### Weekly exported KwH
+
 ```{r}
 # Create aggregated consumption endpoints for each property
 # 
 
 library(rocktopus)
 
-rocktopus::create_endpoint_agg()
-
-agg_url <- create_endpoint_agg(mpan = mpan_serial[1,2], serial = mpan_serial[3,2], group_by = "month")
+agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "day")
 
 
-agg_consumption_data <- get_cons(agg_url)
+agg_consumption_data <- get_cons(agg_url) |>
+  mutate(date_start = ymd(str_sub(interval_start, 1, 10)))
 
+agg_consumption_data |>
+  select(date_start, consumption) |>
+  ggplot(aes(x = date_start, y = consumption)) +
+  geom_col() +
+  geom_smooth(method = "gam", lty= "dashed", colour = "red", se = FALSE)
 
 ```
 
