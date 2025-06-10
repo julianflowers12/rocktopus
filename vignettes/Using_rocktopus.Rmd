@@ -145,6 +145,10 @@ processed_data |>
 # Create aggregated consumption endpoints for each property
 # 
 
+library(rocktopus)
+
+rocktopus::create_endpoint_agg()
+
 agg_url <- create_endpoint_agg(mpan = mpan_serial[1,2], serial = mpan_serial[3,2], group_by = "month")
 
 

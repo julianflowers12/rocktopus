@@ -19,9 +19,8 @@
 create_endpoint_agg <- function(mpan, serial, period_from = "2024-01-01T00:00:00", group_by = "day"){
     base_url <- "https://api.octopus.energy/v1/"
 
-    url1 <- paste0(base_url, "electricity-meter-points/", mpan, "/meters/", serial, "/consumption/?page_size=25000&", "period_from" = period_from, "&group_by" = group_by)
+    url1 <- paste0(base_url, "electricity-meter-points/", mpan, "/meters/", serial, "/consumption/?page_size=25000&period_from=", period_from, "&group_by=", group_by)
 
     return(url1)
 }
-
 
