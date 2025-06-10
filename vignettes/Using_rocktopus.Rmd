@@ -149,7 +149,7 @@ processed_data |>
 
 library(rocktopus)
 
-agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "day")
+agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "week")
 
 
 agg_consumption_data <- get_cons(agg_url) |>
