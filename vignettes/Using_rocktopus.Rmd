@@ -64,7 +64,7 @@ We can now extract the MPAN and meter serial number for each property associated
 ```{r}
 # Extract MPAN and meter serial number for each property
 
-mpan_serial <- get_electric_mpan(meter_details, property_index = 2) |>
+mpan_serial <- get_electric_mpan(meter_details, property_index = 1) |>
   enframe() |>
   unnest(value)
 
