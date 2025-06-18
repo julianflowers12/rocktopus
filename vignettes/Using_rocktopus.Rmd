@@ -136,7 +136,6 @@ processed_data |>
         legend.position = "bottom") +
   facet_wrap(~ peak, scales = "free")
 
-
 ```
 
 ## Getting aggregatted consumption data
