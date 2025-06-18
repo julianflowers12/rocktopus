@@ -66,10 +66,9 @@ We can now extract the MPAN and meter serial number for each property associated
 ```{r}
 # Extract MPAN and meter serial number for each property
 
-mpan_serial <- get_electric_mpan(meter_details, property_index = 1) |>
+mpan_serial <- get_electric_mpan(meter_details, property_index = 2) |>
   enframe() |>
   unnest(value)
-
 
 ```
 
@@ -79,7 +78,6 @@ The next step is to create endpoints for retrieving consumption data. The `creat
 
 ```{r}
 # Create consumption endpoints for each property
-
 
 cons_url <- create_endpoint(mpan = mpan_serial[1,2], serial = mpan_serial[3,2])
 
@@ -121,10 +119,10 @@ library(ggplot2)
 processed_data |>
   group_by(date, peak) |>
   summarise(total = sum(consumption, na.rm = TRUE)) |>
-  filter(date > "2025-01-31") |>
+  filter(date > "2024-09-30") |>
   ggplot(aes(x = date, y = total, colour = peak)) +
   geom_point() +
-  geom_smooth(method = "loess", se = FALSE, aes(fill = peak), alpha = 0.2) +
+  geom_smooth(method = "gam", se = FALSE, aes(fill = peak), alpha = 0.2) +
   labs(
     title = "Electricity Consumption",
     x = "Date",
@@ -136,6 +134,7 @@ processed_data |>
   theme(axis.text.x= element_text(angle = 45, hjust = 1, size = 10),
         title = element_text(size = 14, face = "bold"),
         legend.position = "bottom") +
+  geom_vline(xintercept = as.Date(c("2025-05-18", "2025-04-29")), linetype = "dashed", color = "black") +
   facet_wrap(~ peak, scales = "free")
 
 ```
@@ -150,7 +149,7 @@ processed_data |>
 
 library(rocktopus)
 
-agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "week")
+agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "month")
 
 
 agg_consumption_data <- get_cons(agg_url) |>
@@ -160,7 +159,8 @@ agg_consumption_data |>
   select(date_start, consumption) |>
   ggplot(aes(x = date_start, y = consumption)) +
   geom_col() +
-  geom_smooth(method = "gam", lty= "dashed", colour = "red", se = FALSE)
+  geom_smooth(method = "gam", lty= "dashed", colour = "red", se = FALSE) +
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "3 month")
 
 ```
 
