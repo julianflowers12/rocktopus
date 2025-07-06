@@ -24,12 +24,12 @@ To use the `rocktopus` package, you need to install it along with its dependenci
 
 ```{r setup}
 # Install the rocktopus package from GitHub
-install.packages(c("needs"), source = "https://cloud.r-project.org/", repos = "https://cloud.r-project.org/")
+if(!require("needs")) install.packages(c("needs"), repos = "https://cloud.r-project.org/")
 
 library(needs)
 needs("tidyverse", "data.table", "janitor", "lubridate", "httr", "glue", "purrr", "rlist")
 
-devtools::install_github("julianflowers12/rocktopus", force = TRUE)
+devtools::install_github("julianflowers12/rocktopus", force = FALSE)
 library(rocktopus)
 
 ```
@@ -104,9 +104,31 @@ To process the retrieved consumption data, you can use the `process_consumption_
 processed_data <- process_consumption_data(consumption_data) |>
   arrange(desc(date))
 
-glimpse(processed_data)
+head(processed_data)
 
 ```
+
+
+## Trend in off peak consumption
+
+```{r}
+
+ev_data <- fread("/Users/julianflowers/Library/Mobile Documents/com~apple~CloudDocs/Downloads/Charging_data_export.csv") |>
+  janitor::clean_names() |>
+  mutate(date= ymd(str_sub(session_finish_time, 1, 10))) |>
+  filter(location == "home")
+
+processed_data |>
+  filter(peak == "off_peak") |>
+  group_by(date) |>
+  reframe(sumconsmption = sum(consumption, na.rm = TRUE)) |>
+  left_join(ev_data, by = "date") |>
+  ggplot(aes(x = date, y = sumconsmption)) +
+  geom_point(aes(colour = location)) +
+  geom_smooth(method = "gam")
+```
+
+
 
 ## Visualizing Consumption Data
 
