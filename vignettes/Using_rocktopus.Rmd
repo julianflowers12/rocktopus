@@ -113,19 +113,21 @@ head(processed_data)
 
 ```{r}
 
-ev_data <- fread("/Users/julianflowers/Library/Mobile Documents/com~apple~CloudDocs/Downloads/Charging_data_export.csv") |>
-  janitor::clean_names() |>
-  mutate(date= ymd(str_sub(session_finish_time, 1, 10))) |>
-  filter(location == "home")
+# ev_data <- read_csv("/Users/julianflowers/Library/Mobile Documents/com~apple~CloudDocs/Downloads/Charging_data_export.csv") |>
+#   janitor::clean_names() |>
+#   mutate(date= ymd(str_sub(session_finish_time, 1, 10))) |>
+#   filter(location == "home")
 
 processed_data |>
   filter(peak == "off_peak") |>
   group_by(date) |>
   reframe(sumconsmption = sum(consumption, na.rm = TRUE)) |>
-  left_join(ev_data, by = "date") |>
+  #left_join(ev_data, by = "date") |>
   ggplot(aes(x = date, y = sumconsmption)) +
-  geom_point(aes(colour = location)) +
-  geom_smooth(method = "gam")
+  geom_point() +
+  geom_smooth(method = "gam") +
+  theme_classic()
+
 ```
 
 
@@ -135,8 +137,6 @@ processed_data |>
 You can visualize the processed consumption data using `ggplot2`. The following code snippet demonstrates how to create a bar plot showing electricity consumption over time, categorized by peak and off-peak periods.
 
 ```{r, fig.width=6, fig.height=6}
-
-library(ggplot2)
 
 processed_data |>
   group_by(date, peak) |>
@@ -151,11 +151,12 @@ processed_data |>
     y = "Consumption (kWh)",
     fill = "Peak"
   ) +
-  ggthemes::theme_base() +
+  ggthemes::theme_economist() +
   scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 month") +
-  theme(axis.text.x= element_text(angle = 45, hjust = 1, size = 10),
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, size = 10),
         title = element_text(size = 14, face = "bold"),
-        legend.position = "bottom") +
+        legend.position = "bottom", 
+        plot.title.position = "plot") +
   geom_vline(xintercept = as.Date(c("2025-05-18", "2025-04-29")), linetype = "dashed", color = "black") +
   facet_wrap(~ peak, scales = "free")
 
@@ -171,7 +172,7 @@ processed_data |>
 
 library(rocktopus)
 
-agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "month")
+agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = "day")
 
 
 agg_consumption_data <- get_cons(agg_url) |>
@@ -182,7 +183,8 @@ agg_consumption_data |>
   ggplot(aes(x = date_start, y = consumption)) +
   geom_col() +
   geom_smooth(method = "gam", lty= "dashed", colour = "red", se = FALSE) +
-  scale_x_date(date_labels = "%Y-%m", date_breaks = "3 month")
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "1 month") +
+  theme_classic()
 
 ```
 
