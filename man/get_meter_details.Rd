@@ -5,7 +5,7 @@
 \title{Get Meter Details
 This function retrieves details about a specific meter associated with an Octopus Energy account.}
 \usage{
-get_meter_details(acct_no, apikey)
+get_meter_details(acct_no, api_key)
 }
 \arguments{
 \item{acct_no}{A string representing the account number.}
