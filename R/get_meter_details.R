@@ -8,7 +8,7 @@
 #' @export
 #' @import httr2 dplyr
 
-get_meter_details <- function(acct_no, apikey){
+get_meter_details <- function(acct_no, api_key){
 
     require(httr2)
     require(dplyr)
