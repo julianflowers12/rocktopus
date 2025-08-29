@@ -64,7 +64,7 @@ To retrieve meter details associated with your Octopus Energy account, you can u
 ```{r}
 # Retrieve meter details using the get_meter_details function
 
-meter_details <- rocktopus::get_meter_details(acct, api_key)
+meter_details <- rocktopus::get_meter_info(acct, api_key)
 
 ```
 
@@ -73,9 +73,7 @@ We can now extract the MPAN and meter serial number for each property associated
 ```{r}
 # Extract MPAN and meter serial number for each property
 
-mpan_serial <- get_electric_mpan(meter_details, property_index = params$property_index) |>
-  enframe() |>
-  unnest(value)
+mpan <- get_mpan_details(meter_details, property_index = params$property_index) 
 
 ```
 
@@ -86,7 +84,7 @@ The next step is to create endpoints for retrieving consumption data. The `creat
 ```{r}
 # Create consumption endpoints for each property
 
-cons_url <- create_endpoint(mpan = mpan_serial[1,2], serial = mpan_serial[3,2])
+cons_url <- create_endpoint(mpan = mpan[1,3], serial = mpan[1,4])
 
 ```
 
@@ -170,10 +168,9 @@ processed_data |>
 #| label: Create aggregated consumption endpoints for each property
 #| fig-height: 6
 #| fig-width: 6
+#| eval: FALSE
 
 library(rocktopus)
-
-mpan_serial
 
 agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = params$frequency)
 

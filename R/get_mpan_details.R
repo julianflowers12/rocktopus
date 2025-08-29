@@ -8,7 +8,7 @@
 #' out <- get_property_details("your_account_number", "your_api_key")
 
 
-get_electric_mpan <- function(out, property_index = 1){
+get_mpan_details <- function(out, property_index = 1){
 
     require(tibble)
     require(dplyr)
