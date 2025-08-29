@@ -10,7 +10,7 @@ execute:
 params:
   description: "A vignette for using the rocktopus package to retrieve and process energy consumption data from Octopus Energy."
   start: "2025-01-01"
-  property_index: 2
+  property_index: 1
   frequency: "week"
 ---
 
