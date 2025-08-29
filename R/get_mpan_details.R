@@ -14,20 +14,24 @@ get_electric_mpan <- function(out, property_index = 1){
     require(dplyr)
     require(tidyr)
 
-    mpan <- out$properties[[property_index]]$electricity_meter_points[[1]]$mpan
+    mpan_import <- out$properties[[property_index]]$electricity_meter_points[[1]]$mpan
     mpan_export <- out$properties[[property_index]]$electricity_meter_points[[2]]$mpan
-    meter_serial <- out$properties[[property_index]]$electricity_meter_points[[1]]$meters[[1]]$serial_number
-    export_serial <- out$properties[[property_index]]$electricity_meter_points[[2]]$meters[[1]]$serial_number
+    serial_import <- out$properties[[property_index]]$electricity_meter_points[[1]]$meters[[1]]$serial_number
+    serial_export <- out$properties[[property_index]]$electricity_meter_points[[2]]$meters[[1]]$serial_number
     #gas_mprn <- out$properties[[property_index]]$gas_meter_points[[1]]$mprn
     #gas_serial <- out$properties[[property_index]]$gas_meter_points[[1]]$meters[[1]]$serial_number
 
-    return(list(mpan = mpan,
+    mpan_table <- (tibble(property_index = property_index,
+        mpan_import = mpan_import,
                 mpan_export = mpan_export,
-                meter_serial = meter_serial,
-                export_serial = export_serial)
-    ) |>
-        enframe() |>
-        unnest()
+                serial_import = serial_import,
+                serial_export = serial_export)) |>
+        pivot_longer(cols = -property_index,
+                     names_to = c(".value", "flow"),
+                     names_sep = "_")
+
+    return(mpan_table)
+
 
 
 
