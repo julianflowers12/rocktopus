@@ -8,13 +8,13 @@
 #' @export
 
 
-get_cons <- function(url){
+get_cons <- function(url, api_key){
 
-        resp <- octo_request(url, api_key) |>
+        resp <- octo_request(url, api_key = api_key) |>
         httr2::req_perform() |>
-        httr2::resp_body_json(resp, simplifyVector = TRUE)
+        httr2::resp_body_json()
 
-    response <- response |>
+    response <- resp |>
         tibble::enframe() |>
         dplyr::filter(name == "results") |>
         tidyr::unnest(value) |>

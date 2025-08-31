@@ -26,7 +26,7 @@ get_tariff_info <- function(api_key, acct, property_index){
     property_index <- as.integer(property_index)
 
 
-    response <- rresp <- octo_request(urlx, api_key) |>
+    resp <- octo_request(urlx, api_key) |>
         httr2::req_perform()
 
     out <- httr2::resp_body_json(resp, simplifyVector = TRUE)

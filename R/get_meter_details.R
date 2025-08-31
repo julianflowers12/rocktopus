@@ -18,7 +18,7 @@ get_meter_info <- function(acct_no, api_key){
     resp <- octo_request(urlx, api_key) |>
         httr2::req_perform()
 
-    out <- httr2::resp_body_json(resp, simplifyVector = TRUE)
+    out <- httr2::resp_body_json(resp)
 
     return(out)
 }

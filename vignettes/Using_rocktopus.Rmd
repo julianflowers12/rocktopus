@@ -34,7 +34,7 @@ if(!require("needs")) install.packages(c("needs"), repos = "https://cloud.r-proj
 library(needs)
 needs("tidyverse", "data.table", "janitor", "lubridate", "httr", "glue", "purrr", "rlist")
 
-#devtools::install_github("julianflowers12/rocktopus", force = FALSE)
+devtools::install_github("julianflowers12/rocktopus", force = FALSE)
 library(rocktopus)
 
 theme_set(ggthemes::theme_economist())
@@ -81,9 +81,9 @@ mpan <- get_mpan_details(meter_details, property_index = params$property_index)
 
 We can also extract a table of tariff information.
 
-```{r}
+```{r, eval = FALSE}
 
-tariffs <- get_tariff_info(acct, api_key)
+tariffs <- get_tariff_info(api_key, acct, property_index = params$property_index)
 
 
 ```
@@ -107,7 +107,7 @@ To retrieve consumption data, you can use the `get_cons` function, which takes t
 
 ```{r}
 
-consumption_data <- get_cons(cons_url)
+consumption_data <- get_cons(cons_url, api_key = api_key)
 
 head(consumption_data)
 

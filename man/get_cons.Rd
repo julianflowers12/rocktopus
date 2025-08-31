@@ -5,7 +5,7 @@
 \title{Get Consumption Details
 This function retrieves consumption details from the Octopus Energy API.}
 \usage{
-get_cons(url)
+get_cons(url, api_key)
 }
 \arguments{
 \item{url}{The URL to the Octopus Energy API endpoint for consumption details.}

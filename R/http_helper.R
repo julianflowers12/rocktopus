@@ -12,10 +12,13 @@
 octo_request <- function(url, api_key) {
     httr2::request(url) |>
         httr2::req_auth_basic(username = api_key, password = "") |>
-        httr2::user_agent(
-            sprintf(
+        httr2::req_headers(
+            "User-Agent" = sprintf(
                 "rocktopus/%s (R httr2; https://github.com/julianflowers12/rocktopus)",
                 utils::packageVersion("rocktopus")
             )
         )
 }
+
+
+

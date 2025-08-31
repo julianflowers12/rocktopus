@@ -61,12 +61,6 @@
 #'
 
 
-
-
-
-
-
-
 process_consumption_data <- function(consumption_data){
 
     consumption_data <- consumption_data |>
