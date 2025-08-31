@@ -15,10 +15,10 @@ get_meter_info <- function(acct_no, api_key){
 
     urlx = paste0("https://api.octopus.energy/v1/accounts/", acct_no, "/")
 
-    response <- request(urlx) |>
-        req_auth_basic(username = api_key, password = "") |> req_perform()
+    resp <- octo_request(urlx, api_key) |>
+        httr2::req_perform()
 
-    out <- response |> resp_body_json()
+    out <- httr2::resp_body_json(resp, simplifyVector = TRUE)
 
     return(out)
 }

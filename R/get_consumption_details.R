@@ -8,14 +8,11 @@
 #' @export
 
 
-
-
-
 get_cons <- function(url){
 
-    response <- request(url) |>
-        req_auth_basic(username = api_key, password = "") |> req_perform() |>
-        resp_body_json()
+        resp <- octo_request(url, api_key) |>
+        httr2::req_perform() |>
+        httr2::resp_body_json(resp, simplifyVector = TRUE)
 
     response <- response |>
         tibble::enframe() |>

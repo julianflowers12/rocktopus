@@ -13,7 +13,6 @@
 
 get_tariff_info <- function(api_key, acct, property_index){
 
-
     require(httr2)
     require(dplyr)
     require(tibble)
@@ -27,10 +26,10 @@ get_tariff_info <- function(api_key, acct, property_index){
     property_index <- as.integer(property_index)
 
 
-    response <- request(urlx) |>
-        req_auth_basic(username = api_key, password = "") |> req_perform()
+    response <- rresp <- octo_request(urlx, api_key) |>
+        httr2::req_perform()
 
-    out <- response |> resp_body_json()
+    out <- httr2::resp_body_json(resp, simplifyVector = TRUE)
 
 ## import tariff
 
