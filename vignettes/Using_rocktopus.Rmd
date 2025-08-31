@@ -77,6 +77,19 @@ mpan <- get_mpan_details(meter_details, property_index = params$property_index)
 
 ```
 
+## Getting tariff information
+
+We can also extract a table of tariff information.
+
+```{r}
+
+tariffs <- get_tariff_info(acct, api_key)
+
+
+```
+
+
+
 ## Creating Consumption Endpoints
 
 The next step is to create endpoints for retrieving consumption data. The `create_endpoint` function constructs a URL for accessing consumption data based on the MPAN and meter serial number.
