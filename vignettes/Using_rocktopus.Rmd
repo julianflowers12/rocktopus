@@ -34,7 +34,7 @@ if(!require("needs")) install.packages(c("needs"), repos = "https://cloud.r-proj
 library(needs)
 needs("tidyverse", "data.table", "janitor", "lubridate", "httr", "glue", "purrr", "rlist")
 
-devtools::install_github("julianflowers12/rocktopus", force = FALSE)
+devtools::install_github("julianflowers12/rocktopus", force = TRUE)
 library(rocktopus)
 
 theme_set(ggthemes::theme_economist())
@@ -81,10 +81,11 @@ mpan <- get_mpan_details(meter_details, property_index = params$property_index)
 
 We can also extract a table of tariff information.
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 
 tariffs <- get_tariff_info(api_key, acct, property_index = params$property_index)
-
+tariffs |>
+  head(10)
 
 ```
 

@@ -9,8 +9,6 @@
 #' @export
 #' @import httr2 dplyr lubridate stringr purrr tibble tidyr
 
-
-
 get_tariff_info <- function(api_key, acct, property_index){
 
     require(httr2)
@@ -29,7 +27,7 @@ get_tariff_info <- function(api_key, acct, property_index){
     resp <- octo_request(urlx, api_key) |>
         httr2::req_perform()
 
-    out <- httr2::resp_body_json(resp, simplifyVector = TRUE)
+    out <- httr2::resp_body_json(resp)
 
 ## import tariff
 
@@ -47,7 +45,7 @@ get_tariff_info <- function(api_key, acct, property_index){
         arrange(desc(valid))
 
 # charges
-    current_code <- elec_tariff[is.na(elec_tariff$valid_to), "tariff_code"]
+    current_code <- import_tariff[is.na(import_tariff$valid_to), "tariff_code"]
     trunc_code <- current_code |>
         str_remove("E-1R-") |>
         str_remove("-[AZ]$")
