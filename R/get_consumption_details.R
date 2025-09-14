@@ -10,13 +10,27 @@
 
 get_cons <- function(url, api_key){
 
-        resp <- octo_request(url, api_key = api_key) |>
+
+    octo_request <- function(url, api_key) {
+        httr2::request(url) |>
+            httr2::req_auth_basic(username = api_key, password = "") |>
+            httr2::req_headers(
+                "User-Agent" = sprintf(
+                    "rocktopus/%s (R httr2; https://github.com/julianflowers12/rocktopus)",
+                    utils::packageVersion("rocktopus")
+                )
+            )
+    }
+
+    resp <- octo_request(url, api_key = api_key) |>
         httr2::req_perform() |>
         httr2::resp_body_json()
+
 
     response <- resp |>
         tibble::enframe() |>
         dplyr::filter(name == "results") |>
         tidyr::unnest(value) |>
         tidyr::unnest_auto(value)
+
 }
