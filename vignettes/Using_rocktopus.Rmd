@@ -10,8 +10,8 @@ execute:
 params:
   description: "A vignette for using the rocktopus package to retrieve and process energy consumption data from Octopus Energy."
   start: "2025-01-01"
-  property_index: 1
-  frequency: "week"
+  property_index: 2
+  frequency: "month"
 ---
 
 ## Using the `rocktopus` package
@@ -135,13 +135,21 @@ head(processed_data)
 #| fig-width: 6
 
 processed_data |>
-  filter(peak == "off_peak") |>
-  group_by(date) |>
-  reframe(sumconsmption = sum(consumption, na.rm = TRUE)) |>
+  mutate(day = lubridate::wday(date, label = TRUE),
+         month = lubridate::month(date, label = TRUE),
+         year = year(date), 
+         sun = case_when(day == "Sun" ~ 'sun', TRUE ~ 'other')) |>
+  filter(peak == "off_peak", date >= "2025-04-01") |>
+  select(date, day, sun, consumption) |>
+  group_by(date, day) |>
+  reframe(sumconsmption = mean(consumption, na.rm = TRUE)) |>
   #left_join(ev_data, by = "date") |>
-  ggplot(aes(x = date, y = sumconsmption)) +
-  geom_point() +
-  geom_smooth(method = "gam") 
+  ggplot(aes(x = date, y = sumconsmption, colour = day)) +
+  #geom_point() +
+  geom_smooth(method = "loess", se = FALSE, aes(lty = day), span = 0.5) +
+  theme_classic()
+
+
 
 ```
 
@@ -154,7 +162,7 @@ You can visualize the processed consumption data using `ggplot2`. The following 
 processed_data |>
   group_by(date, peak) |>
   summarise(total = sum(consumption, na.rm = TRUE)) |>
-  filter(date > "2024-09-30") |>
+  filter(date > "2024-08-31") |>
   ggplot(aes(x = date, y = total, colour = peak)) +
   geom_point() +
   geom_smooth(method = "gam", se = FALSE, aes(fill = peak), alpha = 0.2) +
@@ -172,6 +180,68 @@ processed_data |>
   geom_vline(xintercept = as.Date(c("2025-05-18", "2025-04-29")), linetype = "dashed", color = "black") +
   facet_wrap(~ peak, scales = "free")
 
+off_peak <- processed_data |>
+  filter(date > "2024-08-31") |>
+  group_by(year = year(date), month = month(date), peak) |>
+  reframe(mon_cons = sum(consumption))  |>
+  pivot_wider(names_from = peak, values_from = mon_cons) |>
+  mutate(summer = mean(peak[month %in% c(4:9)]), 
+         winter = mean(peak[month %in% c(10:12, 1:3)]), 
+         summer1 = mean(off_peak[month %in% c(4:9)]), 
+         winter1 = mean(off_peak[month %in% c(10:12, 1:3)]),
+         period = lubridate::my(paste0(month,"-", year))) |>
+  ggplot(aes(x = period, y = off_peak)) +
+  geom_point() +
+  geom_smooth(method = "gam", se = FALSE, alpha = 0.2) +
+  geom_line(aes(y = summer1), colour = "red") +
+  geom_line(aes(y = winter1), colour = "blue") +
+  labs(
+    title = "Electricity Consumption",
+    x = "Date",
+    y = "Consumption (kWh)",
+    fill = "Peak"
+  ) +
+  scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 month") +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, size = 10),
+        title = element_text(size = 14, face = "bold"),
+        legend.position = "bottom", 
+        plot.title.position = "plot") +
+  geom_vline(xintercept = as.Date(c("2025-05-18", "2025-04-29")), linetype = "dashed", color = "black")
+
+peak <- processed_data |>
+  filter(date > "2024-08-31") |>
+  group_by(year = year(date), month = month(date), peak) |>
+  reframe(mon_cons = sum(consumption))  |>
+  pivot_wider(names_from = peak, values_from = mon_cons) |>
+  mutate(summer = mean(peak[month %in% c(4:9)]), 
+         winter = mean(peak[month %in% c(10:12, 1:3)]), 
+         summer1 = mean(off_peak[month %in% c(4:9)]), 
+         winter1 = mean(off_peak[month %in% c(10:12, 1:3)]),
+         period = lubridate::my(paste0(month,"-", year))) |>
+  ggplot(aes(x = period, y = peak)) +
+  geom_point() +
+  geom_smooth(method = "gam", se = FALSE, aes(fill = peak), alpha = 0.2) +
+  geom_line(aes(y = summer), colour = "red") +
+  geom_line(aes(y = winter), colour = "blue") +
+  labs(
+    title = "Electricity Consumption",
+    x = "Date",
+    y = "Consumption (kWh)",
+    fill = "Peak"
+  ) +
+  scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 month") +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1, size = 10),
+        title = element_text(size = 14, face = "bold"),
+        legend.position = "bottom", 
+        plot.title.position = "plot") +
+  geom_vline(xintercept = as.Date(c("2025-05-18", "2025-04-29")), linetype = "dashed", color = "black")
+
+library(patchwork)
+
+
+off_peak + peak + plot_layout(ncol = 1)
+
+
 ```
 
 ## Getting aggregated consumption data
@@ -185,11 +255,37 @@ processed_data |>
 #| eval: FALSE
 
 library(rocktopus)
+agg_url <- create_endpoint_agg(mpan = mpan[2,3], serial = mpan[2,4], group_by = "month")
 
-agg_url <- create_endpoint_agg(mpan = mpan_serial[2,2], serial = mpan_serial[4,2], group_by = params$frequency)
+t <- get_cons(agg_url, api_key)
+
+octo_request <- function(url, api_key) {
+  httr2::request(url) |>
+    httr2::req_auth_basic(username = api_key, password = "") |>
+    httr2::req_headers(
+      "User-Agent" = sprintf(
+        "rocktopus/%s (R httr2; https://github.com/julianflowers12/rocktopus)",
+        utils::packageVersion("rocktopus")
+      )
+    )
+}
 
 
-agg_consumption_data <- get_cons(agg_url) |>
+resp <- octo_request(agg_url, api_key = Sys.getenv("OCTOPUS_API_KEY")) |>
+        httr2::req_perform() |>
+        httr2::resp_body_json()
+
+response <- resp |>
+        tibble::enframe() |>
+        dplyr::filter(name == "results") |>
+        tidyr::unnest(value) |>
+        tidyr::unnest_auto(value)
+
+export <- get_cons(agg_url, api_key)
+
+octo_request(agg_url, api_key)
+
+agg_consumption_data <- get_cons(agg_url, api_key = api_key) 
   mutate(date_start = ymd(str_sub(interval_start, 1, 10)))
 
 which.max(agg_consumption_data$consumption)

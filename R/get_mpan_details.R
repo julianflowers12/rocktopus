@@ -18,21 +18,22 @@ get_mpan_details <- function(out, property_index = 1){
     mpan_export <- out$properties[[property_index]]$electricity_meter_points[[2]]$mpan
     serial_import <- out$properties[[property_index]]$electricity_meter_points[[1]]$meters[[1]]$serial_number
     serial_export <- out$properties[[property_index]]$electricity_meter_points[[2]]$meters[[1]]$serial_number
-    #gas_mprn <- out$properties[[property_index]]$gas_meter_points[[1]]$mprn
-    #gas_serial <- out$properties[[property_index]]$gas_meter_points[[1]]$meters[[1]]$serial_number
+    gas_mpan <- out$properties[[property_index]]$gas_meter_points[[1]]$mprn
+    gas_serial <- out$properties[[property_index]]$gas_meter_points[[1]]$meters[[1]]$serial_number
 
     mpan_table <- (tibble(property_index = property_index,
         mpan_import = mpan_import,
                 mpan_export = mpan_export,
                 serial_import = serial_import,
-                serial_export = serial_export)) |>
+                serial_export = serial_export,
+                gas_mpan = gas_mpan,
+                gas_serial = gas_serial
+        )) |>
         pivot_longer(cols = -property_index,
                      names_to = c(".value", "flow"),
                      names_sep = "_")
 
     return(mpan_table)
-
-
 
 
 }
